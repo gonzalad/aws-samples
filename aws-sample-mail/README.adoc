@@ -1,0 +1,99 @@
+= Sample AWS Mail Application
+:toc:
+:toclevels: 3
+:toc-placement!:
+
+toc::[]
+
+== Description
+
+Simple Rest Service to test AWS SES.
+
+State : work in progress (SMTP works, SES gives com.amazonaws.AmazonServiceException: User: arn:aws:sts::blabla:assumed-role/aws-elasticbeanstalk-ec2-role/i-blbli is not authorized to perform: cloudformation:DescribeStackResources (Service: AmazonCloudFormation; Status Code: 403; Error Code: AccessDenied; Request ID: bla))
+
+== Build
+
+From command line :
+
+  > gradle build
+
+The application will be available from build/libs/aws-sample-mail-0.0.1-SNAPSHOT.jar
+
+
+== Configuring Amazon SES (Mail)
+
+
+In this section, you'll need to :
+. get the SMTP hostname (only if you use SMTP API)
+. create a SMTP user/password for sending emails (it will be used if you
+use SMTP API to send emails, it won't be used if you use Spring Cloud AWS to send mails).
+. verify the email address you'll use for sending email (From SMTP header).
+
+
+Information about Amazon Mail can be found from AWS Console main menu, by clicking on
+SES link (under Application Services), SMTP Sending link.
+
+This gives you the *SMTP server host name*.
+
+You'll need to click on 'Create My SMTP Credentials'
+to have a *SMTP user and password*.
+
+Click on Email Addresses and 'Verify a New email Address' to add the email
+address you'll use as sender when sending your emails.
+Otherwise, you'll get the following error :
+
+  com.sun.mail.smtp.SMTPSendFailedException: 554 Message rejected: Email address is not verified. The following identities failed the check in region US-WEST-2
+
+== Running With AWS Elastic Beanstalk
+
+=== Deploy
+
+. Open AWS Console +
+  https://aws.amazon.com/console/
+. Select Elastic Beanstalk
+. Create a new Environment for the application  +
++
+[options="header"]
+|===
+| Name | Description |
+| Type | Web Server Environment |
+| Predefined configuration | Java |
+| Environment Type | Single instance |
+| Source | Upload your own (select the application you've built : aws-sample-mail-0.0.1-SNAPSHOT.jar) |
+|===
+
+. This will give you an environment URL (i.e. Environment URL
+. Your application start
+. Next, update the software +
+  Click on Configuration link, Software Configuration button, and add the following
+  Environment Properties :
++
+[options="header"]
+|===
+| Name | Description | Examples
+| MAIL_ALLOWED_TO | list of accepted email destinations | sample@gmail.com, sample2@yahoo.com
+| MAIL_FROM | from mail header | sample@gmail.com
+| SPRING_PROFILES_ACTIVE | Set this variable only if you want to use AWS SES protocole instead of plain SMTP | aws
+| SPRING_MAIL_HOST | AWS SES SMTP host | email-smtp.us-west-2.amazonaws.com
+| SPRING_MAIL_USERNAME | SMTP username | ...
+| SPRING_MAIL_PASSWORD | SMTP password | ...
+|===
+. You'll need to restart the App Server (Action Button > Restart App Server)
+
+
+=== Test
+
+Use a REST Client (i.e. Chrom Postman plugin) and send a POST request to
+http://<your-aws-dns>.elasticbeanstalk.com/mail?to=<to-email>&subject=<sample-subject>
+
+
+=== Running Locally with docker
+
+. Configuration +
+  Set following environment properties :
+
+  mail:
+    from: sample@gmail.com
+    allowed-to:
+      - dev@gmail.com
+      - foo@gmail.com

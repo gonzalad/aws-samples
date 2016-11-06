@@ -1,0 +1,47 @@
+mail:
+  from: sample@gmail.com
+#  allowed-to:
+#    - dev@gmail.com
+#    - foo@gmail.com
+spring:
+  mail:
+    host: localhost
+    username: zic
+    password: zic
+    properties:
+      mail.smtp.timeout: 10000
+      mail.smtp.connectiontimeout: ${mail.smtp.timeout:10000}
+      mail.smtp.writetimeout: ${mail.smtp.timeout:10000}
+logging:
+  level:
+    org.gonzalad: DEBUG
+
+---
+
+# profile for unit test,  for setting allowed-to property.
+# if I set this property in default profile, I cannot
+# override it from environment variable MAIL_ALLOWED_TO
+# bug in spring boot for camelCase or array list properties ?
+spring:
+  profiles: test
+mail:
+  allowed-to:
+    - dev@gmail.com
+    - foo@gmail.com
+
+---
+
+# if you want to use this profile (testing mode), you'll need to set the following system properties :
+# -Dcloud.aws.credentials.accessKey=XXX
+# -Dcloud.aws.credentials.secretKey=XXX
+# and eventually override cloud.aws.credentials.region.static
+spring:
+  profiles: aws
+server:
+  port: 5000
+cloud:
+  aws:
+    credentials:
+      instanceProfile: true
+    region:
+      auto: true
