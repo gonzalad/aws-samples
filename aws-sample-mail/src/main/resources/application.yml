@@ -41,6 +41,8 @@ server:
   port: 5000
 cloud:
   aws:
+    stack:
+      auto: false
     credentials:
       instanceProfile: true
     region:
