@@ -5,10 +5,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 /**
- * Created by Pounet on 06/11/2016.
+ * Created by Adrian on 06/11/2016.
  */
 @Configuration
 @Profile("aws")
+// @ImportResource("classpath:aws-config.xml")
 @Import({ org.springframework.cloud.aws.autoconfigure.context.ContextInstanceDataAutoConfiguration.class,
         org.springframework.cloud.aws.autoconfigure.context.ContextCredentialsAutoConfiguration.class,
         org.springframework.cloud.aws.autoconfigure.context.ContextRegionProviderAutoConfiguration.class,
